@@ -10,6 +10,7 @@
 <style>
 
     h1 {
+        margin-top: 30px;
         text-align: center;
         color:limegreen;
         font-family: sans-serif;
@@ -21,24 +22,23 @@
         background-image: url("./Images/lemon.jpg");
         background-repeat: no-repeat;
         background-size: cover;
-    
     }
 
-    div {
-        margin-top: 10%;
-        margin-right: 25%;
-        float: right;
-        width: 500px;
+    .menurap {
+        margin-top: 13%;
+    }
+    .menubutton {
+        width: 250px;
     }
     
 </style>
 
 <body>
         <h1>Welcome To Nutrion Tracker!</h1>
-    <div>
-    <button type="button" class="btn d-block btn-outline-success">Enter Food</button>
-    <button type="button" class="btn d-block btn-outline-success">Water Intake</button>
-    <button type="button" class="btn d-block btn-outline-success">Add Weight</button>
+    <div class ="menurap">
+    <button type="button" class="btn d-block btn-outline-success mx-auto menubutton" style="margin-bottom:20px">Add/View Food</button>
+    <button type="button" class="btn d-block btn-outline-success mx-auto menubutton" style="margin-bottom:20px">Edit/View Water Intake</button>
+    <button type="button" class="btn d-block btn-outline-success mx-auto menubutton" style="margin-bottom:20px">Edit/View Weight</button>
     </div>
 </body>
 </html>
