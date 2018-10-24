@@ -2,16 +2,16 @@ import React from "react";
 import { Col, Row, Container } from "../../components/Grid";
 import Jumbotron from "../../components/Jumbotron";
 
-const Food = () => (
+const FoodHistory = () => (
   <Container fluid>
     <Row>
       <Col size="md-12">
         <Jumbotron>
-          <h1>Food Search & Select Page</h1>
+          <h1>Food History Page</h1>
         </Jumbotron>
       </Col>
     </Row>
   </Container>
 );
 
-export default Food;
+export default FoodHistory;

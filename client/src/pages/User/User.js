@@ -1,48 +1,17 @@
-class Books extends Component {
-    state = {
-      books: [],
-      title: "",
-      author: "",
-      synopsis: ""
-    };
-  
-    componentDidMount() {
-      this.loadBooks();
-    }
-  
-    loadBooks = () => {
-      API.getBooks()
-        .then(res =>
-          this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-        )
-        .catch(err => console.log(err));
-    };
-  
-    deleteBook = id => {
-      API.deleteBook(id)
-        .then(res => this.loadBooks())
-        .catch(err => console.log(err));
-    };
-  
-    handleInputChange = event => {
-      const { name, value } = event.target;
-      this.setState({
-        [name]: value
-      });
-    };
-  
-    handleFormSubmit = event => {
-      event.preventDefault();
-      if (this.state.title && this.state.author) {
-        API.saveBook({
-          title: this.state.title,
-          author: this.state.author,
-          synopsis: this.state.synopsis
-        })
-          .then(res => this.loadBooks())
-          .catch(err => console.log(err));
-      }
-    };
-}
+import React from "react";
+import { Col, Row, Container } from "../../components/Grid";
+import Jumbotron from "../../components/Jumbotron";
 
-export default Users;
+const User = () => (
+  <Container fluid>
+    <Row>
+      <Col size="md-12">
+        <Jumbotron>
+          <h1>User Page</h1>
+        </Jumbotron>
+      </Col>
+    </Row>
+  </Container>
+);
+
+export default User;
