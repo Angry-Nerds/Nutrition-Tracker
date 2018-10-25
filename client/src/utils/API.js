@@ -17,9 +17,13 @@ export default {
   saveBook: function(bookData) {
     return axios.post("/api/books", bookData);
   },
-
-  createUser: function(userData) {
-    return axios.post("/api/users", userData);
+  logUserIn: function(userData) {
+    return axios.get("/api/users/login", userData);
+  },
+  signUserUp: function(userData) {
+    return axios.post("/api/users/signup", userData)
   }
-
+  // addWeightEntry: function(weightData) {
+  //   return axios.post("/api/users/" + id + "/weight", weightData)
+  // }
 };

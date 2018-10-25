@@ -7,9 +7,12 @@ import { Col, Row, Container } from "../../components/Grid";
 //import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
 
-class Weight extends Component {
+class Signup extends Component {
   state = {
-    weight: ""
+    email: "",
+    password: "",
+    height: "",
+    initialWeight: ""
   };
 
   // componentDidMount() {
@@ -39,9 +42,12 @@ class Weight extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.weight) {
-      API.addWeightEntry({
-        weight: parseFloat(this.state.weight)
+    if (this.state.email && this.state.password) {
+      API.signUserUp({
+        email: this.state.email,
+        password: this.state.password,
+        height: parseInt(this.state.height),
+        initialWeight: parseFloat(this.state.initialWeight)
       })
         .then(res => console.log(res))
         .catch(err => console.log(err));
@@ -54,20 +60,38 @@ class Weight extends Component {
         <Row>
           <Col size="md-6">
             <Jumbotron>
-              <h1>Weight Entry Page</h1>
+              <h1>Sign Up For an Account:</h1>
             </Jumbotron>
             <form>
               <Input
-                value={this.state.weight}
+                value={this.state.email}
                 onChange={this.handleInputChange}
-                name="weight"
-                placeholder="Current Weight (in pounds)"
+                name="email"
+                placeholder="Email (required)"
+              />
+              <Input
+                value={this.state.password}
+                onChange={this.handleInputChange}
+                name="password"
+                placeholder="Password (required)"
+              />
+              <Input
+                value={this.state.height}
+                onChange={this.handleInputChange}
+                name="height"
+                placeholder="Height (in inches)"
+              />
+              <Input
+                value={this.state.initialWeight}
+                onChange={this.handleInputChange}
+                name="initialWeight"
+                placeholder="Weight (in pounds)"
               />
               <FormBtn
                 disabled={!(this.state.email && this.state.password)}
                 onClick={this.handleFormSubmit}
               >
-                Submit
+                Sign Up
               </FormBtn>
             </form>
           </Col>
@@ -77,4 +101,4 @@ class Weight extends Component {
   }
 }
 
-export default Weight;
+export default Signup;

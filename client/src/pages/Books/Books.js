@@ -43,11 +43,10 @@ class Books extends Component {
   handleFormSubmit = event => {
     event.preventDefault();
     if (this.state.title && this.state.author) {
-      API.saveUser({
-        email: 'test@gmail.com',
-        password: 'blah',
-        height: 65,
-        initialWeight: 150
+      API.saveBook({
+        title: this.state.title,
+        author: this.state.author,
+        synopsis: this.state.synopsis
       })
         .then(res => this.loadBooks())
         .catch(err => console.log(err));
