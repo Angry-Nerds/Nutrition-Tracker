@@ -65,6 +65,7 @@ class Login extends Component {
                 name="email"
                 placeholder="Email (required)"
               />
+              <h5>We will never share your email with anyone.</h5>
               <Input
                 value={this.state.password}
                 onChange={this.handleInputChange}
