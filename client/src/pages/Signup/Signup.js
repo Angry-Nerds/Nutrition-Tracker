@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
-//import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 //import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
@@ -46,15 +46,26 @@ class Signup extends Component {
       API.signUserUp({
         email: this.state.email,
         password: this.state.password,
-        height: parseInt(this.state.height),
+        height: parseInt(this.state.height, 10),
         initialWeight: parseFloat(this.state.initialWeight)
       })
-        .then(res => console.log(res))
+        .then(res => {localStorage.setItem("userId", res.data._id);
+            console.log(localStorage.getItem("userId"));
+            this.setState({redirect: true});
+            // API.getUserByEmail({
+            //   email: this.state.email
+            // })
+            //     .then(res => console.log(res))
+            //     .catch(err => console.log(err));
+        })
         .catch(err => console.log(err));
     }
-  };
+  }
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect push to="/users/options" />;
+    }
     return (
       <Container fluid>
         <Row>
@@ -87,12 +98,22 @@ class Signup extends Component {
                 name="initialWeight"
                 placeholder="Weight (in pounds)"
               />
-              <FormBtn
-                disabled={!(this.state.email && this.state.password)}
-                onClick={this.handleFormSubmit}
-              >
-                Sign Up
+              <Link to={"/users/options"}>
+                <FormBtn
+                  disabled={!(this.state.email && this.state.password)}
+                  onClick={this.handleFormSubmit}
+                >
+                  Sign Up
+                </FormBtn>
+              </Link>
+              <br />
+              <br />
+              <Link to={"/"}>
+                <FormBtn
+                >
+                Go Back to Log-In Page
               </FormBtn>
+              </Link>
             </form>
           </Col>
         </Row>
