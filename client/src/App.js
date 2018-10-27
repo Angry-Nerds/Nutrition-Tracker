@@ -20,13 +20,13 @@ const App = () => (
         <Route exact path="/" component={Login} />
         <Route exact path="/users/login" component={Login} />
         <Route exact path="/users/signup" component={Signup} />
-        <Route exact path="/users/:id" component={User} />
-        <Route exact path="/users/:id/food" component={Food} />
-        <Route exact path="/users/:id/food/history" component={FoodHistory} />
-        <Route exact path="/users/:id/water" component={Water} />
-        <Route exact path="/users/:id/water/history" component={WaterHistory} />
-        <Route exact path="/users/:id/weight" component={Weight} />
-        <Route exact path="/users/:id/weight/history" component={WeightHistory} />
+        <Route exact path="/users/options" component={User} />
+        <Route exact path="/users/food" component={Food} />
+        <Route exact path="/users/food/history" component={FoodHistory} />
+        <Route exact path="/users/water" component={Water} />
+        <Route exact path="/users/water/history" component={WaterHistory} />
+        <Route exact path="/users/weight" component={Weight} />
+        <Route exact path="/users/weight/history" component={WeightHistory} />
         <Route component={NoMatch} />
       </Switch>
     </div>

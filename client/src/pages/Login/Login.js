@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
-//import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 //import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
@@ -42,7 +42,7 @@ class Login extends Component {
   handleFormSubmit = event => {
     event.preventDefault();
     if (this.state.email && this.state.password) {
-      API.logUserIn({
+      API.findOne({
         email: this.state.email,
         password: this.state.password
       })
@@ -79,6 +79,15 @@ class Login extends Component {
               >
                 Log In
               </FormBtn>
+              <br />
+              <br />
+              <Link to={"/users/signup"}>
+                <FormBtn
+                >
+                Go to Sign-Up Page
+              </FormBtn>
+              </Link>
+              
             </form>
           </Col>
         </Row>

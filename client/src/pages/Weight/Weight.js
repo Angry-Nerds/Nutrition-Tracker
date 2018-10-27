@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
-//import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 //import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
@@ -39,16 +39,21 @@ class Weight extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.weight) {
-      API.addWeightEntry({
-        weight: parseFloat(this.state.weight)
+    if (this.state.weight > 0) {
+      API.saveWeight({
+        weight: parseFloat(this.state.weight),
+        userId: localStorage.getItem("userId")
       })
-        .then(res => console.log(res))
+        .then(res => {console.log(res);
+        })
         .catch(err => console.log(err));
     }
-  };
+  }
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect push to="/users/options" />;
+    }
     return (
       <Container fluid>
         <Row>
@@ -57,18 +62,34 @@ class Weight extends Component {
               <h1>Weight Entry Page</h1>
             </Jumbotron>
             <form>
-              <Input
+            <Input
                 value={this.state.weight}
                 onChange={this.handleInputChange}
                 name="weight"
-                placeholder="Current Weight (in pounds)"
+                placeholder="Weight (in pounds)"
               />
               <FormBtn
-                disabled={!(this.state.email && this.state.password)}
-                onClick={this.handleFormSubmit}
-              >
-                Submit
+                  disabled={!(this.state.weight)}
+                  onClick={this.handleFormSubmit}
+                >
+                  Submit Weight Entry
+                </FormBtn>
+              <br />
+              <br />
+              <Link to={"/users/weight/history"}>
+                <FormBtn
+                >
+                View Weight Entry History
               </FormBtn>
+              </Link>
+              <br />
+              <br />
+              <Link to={"/users/options"}>
+                <FormBtn
+                >
+                Go Back to User Options
+              </FormBtn>
+              </Link>
             </form>
           </Col>
         </Row>
