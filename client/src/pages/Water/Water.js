@@ -16,20 +16,6 @@ class Water extends Component {
   //   this.loadBooks();
   // }
 
-  // loadBooks = () => {
-  //   API.getBooks()
-  //     .then(res =>
-  //       this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-  //     )
-  //     .catch(err => console.log(err));
-  // };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
-
   handleInputChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -39,36 +25,53 @@ class Water extends Component {
 
   handleIncrement = event => {
     event.preventDefault();
-    if (this.state.glassesOfWater === 0) {
-      API.saveWaterEntry({
-        glassesOfWater: 1,
-        userId: localStorage.getItem("userId")
-      })
-      .then(res => {console.log(res);
-        this.setState({ glassesOfWater: this.state.glassesOfWater + 1 });
-      })
-      .catch(err => console.log(err));
-    }
-    else {
+    this.setState({ glassesOfWater: this.state.glassesOfWater + 1 });
+    
+    // if (this.state.glassesOfWater === 0) {
+    //   API.saveWaterEntry({
+    //     glassesOfWater: 1,
+    //     userId: localStorage.getItem("userId")
+    //   })
+    //   .then(res => {console.log(res);
+    //     this.setState({ glassesOfWater: this.state.glassesOfWater + 1 });
+    //   })
+    //   .catch(err => console.log(err));
+    // }
+    // else {
       
-    }
+    // }
   }
 
   handleDecrement = event => {
     event.preventDefault();
     if (this.state.glassesOfWater > 0) {
-      API.saveWaterEntry({
-        glassesOfWater: 0,
-        userId: localStorage.getItem("userId")
-      })
-      .then(res => {console.log(res);
-        this.setState({ glassesOfWater: this.state.glassesOfWater - 1});
-      })
-      .catch(err => console.log(err));
+      this.setState({ glassesOfWater: this.state.glassesOfWater - 1 });
     }
-    else {
+    // if (this.state.glassesOfWater > 0) {
+    //   API.saveWaterEntry({
+    //     glassesOfWater: 0,
+    //     userId: localStorage.getItem("userId")
+    //   })
+    //   .then(res => {console.log(res);
+    //     this.setState({ glassesOfWater: this.state.glassesOfWater - 1});
+    //   })
+    //   .catch(err => console.log(err));
+    // }
+    // else {
       
-    }
+    // }
+  }
+
+  submitWaterIntake = event => {
+    event.preventDefault();
+
+    API.saveWaterEntry({
+          glassesOfWater: this.state.glassesOfWater,
+          userId: localStorage.getItem("userId")
+        })
+        .then(res => {console.log(res);
+        })
+        .catch(err => console.log(err));
   }
 
   render() {
@@ -87,15 +90,22 @@ class Water extends Component {
             <FormBtn
                   onClick={this.handleIncrement}
                 >
-                  Add a Glass to Today's Water Intake
+                  +
                 </FormBtn>
                 <FormBtn
                   onClick={this.handleDecrement}
                 >
-                  Subtract a Glass from Today's Water Intake
+                  -
                 </FormBtn>
                 <br />
                 <br />
+                <FormBtn
+                  disabled={this.state.glassesOfWater <= 0}
+                  onClick={this.submitWaterIntake}
+                >
+                  Submit Water Intake
+                </FormBtn>
+
               <Link to={"/users/water/history"}>
                 <FormBtn
                 >

@@ -6,6 +6,7 @@ import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
+import Moment from "react-moment";
 
 class WaterHistory extends Component {
   state = {
@@ -19,9 +20,7 @@ class WaterHistory extends Component {
   loadWaterEntries = () => {
     const userId = localStorage.getItem("userId");
     console.log(userId);
-    API.getWaterEntries({
-      id: userId
-    })
+    API.getWaterEntries(userId)
       .then(res => {console.log(res);
         this.setState({ waterEntries: res.data.waterEntries });
       })
@@ -95,7 +94,7 @@ class WaterHistory extends Component {
             <List>
                 {this.state.waterEntries.map(waterEntry => (
                   <ListItem key={waterEntry._id}>
-                    {waterEntry.glassesOfWater} ({waterEntry.date})
+                    {waterEntry.glassesOfWater} (<Moment>{waterEntry.date}</Moment>)
                   </ListItem>
                 ))}
               </List>

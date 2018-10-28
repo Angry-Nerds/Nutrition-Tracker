@@ -5,20 +5,33 @@ import API from "../../utils/API";
 import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
+import SelectBtn from "../../components/SelectBtn";
 import { Input, FormBtn } from "../../components/Form";
+import moment from "moment";
 
 class Food extends Component {
   state = {
-    email: "",
-    password: "",
-    height: "",
-    initialWeight: "",
-    foodItems: []
+    search: "",
+    foodItems: [],
+    example: "",
+    results: [],
+    error: "",
+    apikey: "",
+    itemNum: 0,
+    nutrientsList: [],
+    itemInfo: {},
+    caloriesToday: 0,
+    foodEntries: []
   };
 
-  // componentDidMount() {
-  //   this.loadBooks();
-  // }
+  searchFoodItems = (event) => {
+    API.getFoodItems()
+
+  }
+
+  componentDidMount() {
+    this.getCaloriesToday();
+  }
 
   // loadBooks = () => {
   //   API.getBooks()
@@ -43,24 +56,108 @@ class Food extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.email && this.state.password) {
-      API.signUserUp({
-        email: this.state.email,
-        password: this.state.password,
-        height: parseInt(this.state.height, 10),
-        initialWeight: parseFloat(this.state.initialWeight)
+    this.getKey();
+    //this.searchTest(this.state.search, this.state.apikey);
+    
+    
+  };
+
+  searchAPI = query => {
+    API.foodSearch(query, this.state.apikey)
+      .then(response => {
+        //console.log(res);
+        //console.log(res.data);
+        console.log(JSON.stringify(response));
+        console.log(response.data.list.item[0].name);
+        console.log(response.data.list.item[0].ndbno);
+        this.setState({itemNum: response.data.list.item[0].ndbno});
+        this.setState({foodItems: response.data.list.item});
+        console.log(response.data.list.item[0].group);
+        this.setState({itemNum: 0, 
+          nutrientsList: [],
+          itemInfo: {}
+        });
       })
-        .then(res => {localStorage.setItem("userId", res.data._id);
-            console.log(localStorage.getItem("userId"));
-            this.setState({redirect: true});
-            // API.getUserByEmail({
-            //   email: this.state.email
-            // })
-            //     .then(res => console.log(res))
-            //     .catch(err => console.log(err));
-        })
-        .catch(err => console.log(err));
+      .catch(err => console.log(err));
+  }
+
+  getKey = () => {
+    API.getSecret()
+      .then(res => {
+        this.setState({apikey: res.data.password});
+        this.searchAPI(this.state.search, this.state.apikey);
+        //this.setState({apikey: ""});
+      })
+      .catch(err => console.log(err));
+  }
+
+  // getKeyAfterItemSelect = () => {
+  //   API.getSecret()
+  //   .then(res => {
+  //     this.setState({apikey: res.data.password});
+  //     this.searchAPI(this.state.search, this.state.apikey);
+  //     this.setState({apikey: ""});
+  //   })
+  //   .catch(err => console.log(err));
+  // }
+
+  getItem = id => {
+    API.getFoodItem(id, this.state.apikey)
+      .then(res => {console.log(res);
+        console.log(JSON.stringify(res));
+        console.log(res.data.report.food.name);
+        console.log(res.data.report.food.nutrients[0].value);
+        console.log(res.data.report.food.nutrients[0].unit);
+        this.setState({nutrientsList: res.data.report.food.nutrients});
+        console.log(res.data.report.food.nutrients[0].measures[0].value);
+        console.log(res.data.report.food.nutrients[0].measures[0].eunit);
+        this.setState({itemInfo:res.data.report.food});
+        console.log(res.data.report.food.nutrients.find(obj=>obj.name==="Protein").value);
+      })
+      .catch(err => console.log(err));
+  };
+
+  submitItem = event => {
+    event.preventDefault();
+    const info = this.state.itemInfo;
+    API.submitFoodItem({
+      foodItem: info.name,
+      itemNumber: info.ndbno,
+      energy: this.findKey("Energy"),
+      protein: this.findKey("Protein"),
+      fat: this.findKey("Total lipid (fat)"),
+      carbs: this.findKey("Energy"),
+      fiber: this.findKey("Carbohydrate, by difference"),
+      sugar: this.findKey("Sugars, total"),
+      userId: localStorage.getItem("userId")
+    })
+    .then(res => {console.log(res); 
+      this.getCaloriesToday();})
+    .catch(err => console.log(err));
+  };
+
+  findKey = key => {
+    const info = this.state.itemInfo;
+    if (info.nutrients.find(obj => obj.name === key)) {
+      return info.nutrients.find(obj => obj.name === key).value;
     }
+    else {
+      return 0;
+    }
+  }
+
+  getCaloriesToday = () => {
+    API.getCalsToday(localStorage.getItem("userId"))
+    .then(res => {console.log(res);
+      this.setState({ foodEntries: res.data.foodEntries });
+      const today = moment().startOf('day');
+      const tomorrow = moment(today).endOf('day');
+      const result = this.state.foodEntries.filter(foodEntry => (moment(foodEntry.date).isAfter(today) && moment(foodEntry.date).isBefore(tomorrow)))
+        .reduce(function(sum, entry) {console.log(entry.energy); return sum + entry.energy}, 0);
+      console.log("result: " + result);
+      this.setState({caloriesToday: result});
+    })
+    .catch(err => console.log(err));
   }
 
   render() {
@@ -73,30 +170,29 @@ class Food extends Component {
           <Col size="md-6">
             <Jumbotron>
               <h1>Food Search & Select Page</h1>
+              <h2>Calories Consumed Today: {this.state.caloriesToday}</h2>
             </Jumbotron>
             <form>
               <Input
-                value={this.state.email}
+                value={this.state.search}
                 onChange={this.handleInputChange}
-                name="email"
-                placeholder="Email (required)"
+                name="search"
+                placeholder="Search"
               />
               <FormBtn
-                  disabled={!(this.state.email && this.state.password)}
+                  disabled={!(this.state.search)}
                   onClick={this.handleFormSubmit}
                 >
                   Search
                 </FormBtn>
                 <br />
               <br />
-              <Link to={"/users/options"}>
                 <FormBtn
-                  disabled={!(this.state.email && this.state.password)}
-                  onClick={this.handleFormSubmit}
+                  disabled={this.state.nutrientsList.length === 0}
+                  onClick={this.submitItem}
                 >
                   Submit Food Entry
                 </FormBtn>
-              </Link>
               <br />
               <br />
               <Link to={"/users/food/history"}>
@@ -114,11 +210,20 @@ class Food extends Component {
               </FormBtn>
               </Link>
             </form>
+            {this.state.nutrientsList.length ? (
+              <form>
+              {this.state.nutrientsList.map(nutrient => (
+                <p key={nutrient.name}>{nutrient.name}: {nutrient.value} {nutrient.unit}</p>
+              ))}
+              </form>
+            ) : (<p></p>)}
+            
             {this.state.foodItems.length ? (
             <List>
                 {this.state.foodItems.map(foodItem => (
-                  <ListItem key={foodItem._id}>
-                    {foodItem.value}
+                  <ListItem key={foodItem.ndbno}>
+                    {foodItem.name}
+                    <SelectBtn onClick={() => this.getItem(foodItem.ndbno)} />
                   </ListItem>
                 ))}
               </List>

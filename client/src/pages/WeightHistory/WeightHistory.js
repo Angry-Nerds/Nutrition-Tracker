@@ -6,6 +6,11 @@ import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
+import Moment from "react-moment";
+import moment from "moment";
+import ReactChartkick, { LineChart, PieChart } from 'react-chartkick'
+import Chart from 'chart.js'
+ReactChartkick.addAdapter(Chart)
 
 class WeightHistory extends Component {
   state = {
@@ -19,20 +24,12 @@ class WeightHistory extends Component {
   loadWeightEntries = () => {
     const userId = localStorage.getItem("userId");
     console.log(userId);
-    API.getWeightEntries({
-      id: userId
-    })
+    API.getWeightEntries(userId)
       .then(res => {console.log(res);
         this.setState({ weightEntries: res.data.weightEntries });
       })
       .catch(err => console.log(err));
   };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
 
   handleInputChange = event => {
     const { name, value } = event.target;
@@ -53,11 +50,6 @@ class WeightHistory extends Component {
         .then(res => {localStorage.setItem("userId", res.data._id);
             console.log(localStorage.getItem("userId"));
             this.setState({redirect: true});
-            // API.getUserByEmail({
-            //   email: this.state.email
-            // })
-            //     .then(res => console.log(res))
-            //     .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
     }
@@ -67,6 +59,11 @@ class WeightHistory extends Component {
     if (this.state.redirect) {
       return <Redirect push to="/users/options" />;
     }
+    var points = {};
+    for (var i = 0; i < this.state.weightEntries.length; i++) {
+        //points[moment(this.state.weightEntries[i].date).format("YYYY-MM-DD")] = this.state.weightEntries[i].weight;
+        points[this.state.weightEntries[i].date] = this.state.weightEntries[i].weight;
+    }
     return (
       <Container fluid>
         <Row>
@@ -74,6 +71,7 @@ class WeightHistory extends Component {
             <Jumbotron>
               <h1>Weight Entry History Page</h1>
             </Jumbotron>
+            <LineChart data={points} />
             <form>
               
               <Link to={"/users/weight/"}>
@@ -95,7 +93,7 @@ class WeightHistory extends Component {
             <List>
                 {this.state.weightEntries.map(weightEntry => (
                   <ListItem key={weightEntry._id}>
-                    {weightEntry.weight} ({weightEntry.date})
+                    {weightEntry.weight} (<Moment >{weightEntry.date}</Moment>)
                   </ListItem>
                 ))}
               </List>
