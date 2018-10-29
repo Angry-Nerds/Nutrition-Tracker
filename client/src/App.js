@@ -11,6 +11,7 @@ import Weight from "./pages/Weight";
 import WeightHistory from "./pages/WeightHistory";
 import NoMatch from "./pages/NoMatch";
 import Nav from "./components/Nav";
+import LineChart from "../src/pages/lineChart"
 
 const App = () => (
   <Router>
@@ -27,6 +28,7 @@ const App = () => (
         <Route exact path="/users/water/history" component={WaterHistory} />
         <Route exact path="/users/weight" component={Weight} />
         <Route exact path="/users/weight/history" component={WeightHistory} />
+        <Route exact path="/users/lineChart" component={LineChart} />
         <Route component={NoMatch} />
       </Switch>
     </div>

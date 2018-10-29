@@ -6,6 +6,11 @@ import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 //import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
+import LineChart from "react-linechart";
+
+//Bo's local ==> you have to "npm install react-linechart --save" on your node_modules;
+// and make sure you change the below file path leading to the linechart css 
+import "../../../../node_modules/react-linechart/dist/styles.css"
 
 class FoodHistory extends Component {
   state = {
