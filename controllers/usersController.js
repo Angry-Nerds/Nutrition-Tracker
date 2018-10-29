@@ -1,14 +1,9 @@
 const db = require("../models");
+const moment = require("moment");
 
 // Defining methods for the booksController
 module.exports = {
-//   findAll: function(req, res) {
-//     db.Book
-//       .find(req.query)
-//       .sort({ date: -1 })
-//       .then(dbModel => res.json(dbModel))
-//       .catch(err => res.status(422).json(err));
-//   },
+
   findById: function(req, res) {
     db.User
       .findById(req.params.id)
@@ -27,7 +22,13 @@ module.exports = {
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },
-  findAccount: function(req, res) {
+  getSecret: function(req, res) {
+      db.User
+        .findOne({ email: "secret" })
+        .then(dbModel => res.json(dbModel))
+        .catch(err => res.status(422).json(err));
+  },
+  findAndVerifyAccount: function(req, res) {
     //db.User.findOne({ email: req.body.email })
     db.User.findOne({email: req.body.email})
         .then(function(dbUser) {
@@ -97,8 +98,8 @@ module.exports = {
           res.json(dbUser);
         })
         .catch(err => res.status(422).json(err));
-},
-saveFoodEntry: function(req, res) {
+  },
+  saveFoodEntry: function(req, res) {
     db.FoodEntry
       .create({
         foodItem: req.body.foodItem,
@@ -112,59 +113,37 @@ saveFoodEntry: function(req, res) {
       })
       .then(function(dbFoodEntry) {
           return db.User.findOneAndUpdate({_id: req.body.userId}, 
-              { $push: { entriesEntries: dbFoodEntry._id } }, { new: true });
+              { $push: { foodEntries: dbFoodEntry._id } }, { new: true });
         })
         .then(function(dbUser) {
           // If we were able to successfully update a User, send it back to the client
           res.json(dbUser);
         })
         .catch(err => res.status(422).json(err));
-},
-getWeightEntries: function(req, res) {
-    console.log("here: " + req.body.id);
-    db.User.findById(req.body.id)
+  },
+  getWeightEntries: function(req, res) {
+    //console.log("here: " + req.body.id);
+    //db.User.findById(req.body.id)
+    db.User.findById(req.params.id)
     // ..and populate all of the weight entries associated with it
         .populate("weightEntries")
-        .sort({date: -1})
         .then(dbUser => res.json(dbUser))
         .catch(err => res.status(422).json(err));
     },
-getWaterEntries: function(req, res) {
-    console.log("here: " + req.body.id);
-    db.User.findById(req.body.id)
+    getWaterEntries: function(req, res) {
+    // console.log("here: " + req.body.id);
+    // db.User.findById(req.body.id)
+    db.User.findById(req.params.id)
     // ..and populate all of the water entries associated with it
         .populate("waterEntries")
-        .sort({date: -1})
         .then(dbUser => res.json(dbUser))
         .catch(err => res.status(422).json(err));
     },
     getFoodEntries: function(req, res) {
-        console.log("here: " + req.body.id);
-        db.User.findById(req.body.id)
-        // ..and populate all of the water entries associated with it
+        db.User.findById(req.params.id)
+        // ..and populate all of the food entries associated with it
             .populate("foodEntries")
-            .sort({date: -1})
             .then(dbUser => res.json(dbUser))
             .catch(err => res.status(422).json(err));
-        }
-
-//   create: function(req, res) {
-//     db.Book
-//       .create(req.body)
-//       .then(dbModel => res.json(dbModel))
-//       .catch(err => res.status(422).json(err));
-//   },
-//   update: function(req, res) {
-//     db.Book
-//       .findOneAndUpdate({ _id: req.params.id }, req.body)
-//       .then(dbModel => res.json(dbModel))
-//       .catch(err => res.status(422).json(err));
-//   },
-//   remove: function(req, res) {
-//     db.Book
-//       .findById({ _id: req.params.id })
-//       .then(dbModel => dbModel.remove())
-//       .then(dbModel => res.json(dbModel))
-//       .catch(err => res.status(422).json(err));
-//   }
+    }
 };

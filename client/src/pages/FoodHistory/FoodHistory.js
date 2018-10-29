@@ -4,39 +4,31 @@ import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
 import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
-//import { List, ListItem } from "../../components/List";
+import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
-import LineChart from "react-linechart";
-
-//Bo's local ==> you have to "npm install react-linechart --save" on your node_modules;
-// and make sure you change the below file path leading to the linechart css 
-import "../../../../node_modules/react-linechart/dist/styles.css"
+import Moment from "react-moment";
+import ReactChartkick, { LineChart, PieChart } from 'react-chartkick'
+import Chart from 'chart.js'
+ReactChartkick.addAdapter(Chart)
 
 class FoodHistory extends Component {
   state = {
-    email: "",
-    password: "",
-    height: "",
-    initialWeight: ""
+    foodEntries: []
   };
 
-  // componentDidMount() {
-  //   this.loadBooks();
-  // }
+  componentDidMount() {
+    this.loadFoodEntries();
+  }
 
-  // loadBooks = () => {
-  //   API.getBooks()
-  //     .then(res =>
-  //       this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-  //     )
-  //     .catch(err => console.log(err));
-  // };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
+  loadFoodEntries = () => {
+    const userId = localStorage.getItem("userId");
+    console.log(userId);
+    API.getFoodEntries(userId)
+      .then(res => {console.log(res);
+        this.setState({ foodEntries: res.data.foodEntries });
+      })
+      .catch(err => console.log(err));
+  };
 
   handleInputChange = event => {
     const { name, value } = event.target;
@@ -57,11 +49,6 @@ class FoodHistory extends Component {
         .then(res => {localStorage.setItem("userId", res.data._id);
             console.log(localStorage.getItem("userId"));
             this.setState({redirect: true});
-            // API.getUserByEmail({
-            //   email: this.state.email
-            // })
-            //     .then(res => console.log(res))
-            //     .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
     }
@@ -71,6 +58,13 @@ class FoodHistory extends Component {
     if (this.state.redirect) {
       return <Redirect push to="/users/options" />;
     }
+    var points = [];
+    // s represents sum (accumulator), i represents the current food item
+    points.push(["Protein", this.state.foodEntries.reduce(function(s, i) {return s + i.protein}, 0)]);
+    points.push(["Fat", this.state.foodEntries.reduce(function(s, i) {return s + i.fat}, 0)]);
+    points.push(["Carbs", this.state.foodEntries.reduce(function(s, i) {return s + i.carbs}, 0)]);
+    points.push(["Fiber", this.state.foodEntries.reduce(function(s, i) {return s + i.fiber}, 0)]);
+    points.push(["Sugar", this.state.foodEntries.reduce(function(s, i) {return s + i.sugar}, 0)]);
     return (
       <Container fluid>
         <Row>
@@ -78,6 +72,7 @@ class FoodHistory extends Component {
             <Jumbotron>
               <h1>Food History Page</h1>
             </Jumbotron>
+            <PieChart data={points} />
             <form>
               
               <Link to={"/users/food/"}>
@@ -95,6 +90,17 @@ class FoodHistory extends Component {
               </FormBtn>
               </Link>
             </form>
+            {this.state.foodEntries.length ? (
+            <List>
+                {this.state.foodEntries.map(foodEntry => (
+                  <ListItem key={foodEntry._id}>
+                    {foodEntry.foodItem} (<Moment format="YYYY/MM/DD">{foodEntry.date}</Moment>) Calories: {foodEntry.energy}
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <h3>No Results to Display</h3>
+            )}
           </Col>
         </Row>
       </Container>
