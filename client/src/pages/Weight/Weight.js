@@ -12,24 +12,6 @@ class Weight extends Component {
     weight: ""
   };
 
-  // componentDidMount() {
-  //   this.loadBooks();
-  // }
-
-  // loadBooks = () => {
-  //   API.getBooks()
-  //     .then(res =>
-  //       this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-  //     )
-  //     .catch(err => console.log(err));
-  // };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
-
   handleInputChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -44,8 +26,7 @@ class Weight extends Component {
         weight: parseFloat(this.state.weight),
         userId: localStorage.getItem("userId")
       })
-        .then(res => {console.log(res);
-        })
+        .then(this.setState({weight: ""}))
         .catch(err => console.log(err));
     }
   }
@@ -57,9 +38,9 @@ class Weight extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
-              <h1>Weight Entry Page</h1>
+              <h1>Weight Entry</h1>
             </Jumbotron>
             <form>
             <Input

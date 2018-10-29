@@ -68,5 +68,14 @@ export default {
   },
   getCalsToday: function(id) {
     return axios.get("/api/users/food/cals/" + id);
+  },
+  deleteFoodEntry: function(id) {
+    return axios.delete("/api/users/food/history/" + id);
+  },
+  deleteWaterEntry: function(id) {
+    return axios.delete("/api/users/water/history/" + id);
+  },
+  deleteWeightEntry: function(id) {
+    return axios.delete("/api/users/weight/history/" + id);
   }
 };

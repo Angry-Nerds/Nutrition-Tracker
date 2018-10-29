@@ -10,26 +10,9 @@ import { Input, FormBtn } from "../../components/Form";
 class Login extends Component {
   state = {
     email: "",
-    password: ""
+    password: "",
+    message: ""
   };
-
-  // componentDidMount() {
-  //   this.loadBooks();
-  // }
-
-  // loadBooks = () => {
-  //   API.getBooks()
-  //     .then(res =>
-  //       this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-  //     )
-  //     .catch(err => console.log(err));
-  // };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
 
   handleInputChange = event => {
     const { name, value } = event.target;
@@ -48,10 +31,11 @@ class Login extends Component {
         .then(res => {
           if (res.data.user) {
             localStorage.setItem("userId", res.data.user._id);
-            console.log(localStorage.getItem("userId"));
             this.setState({redirect: true});
           }
-          
+          else {
+            this.setState({message: res.data.message});
+          }
         })
         .catch(err => console.log(err));
     }
@@ -64,9 +48,9 @@ class Login extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
-              <h1>Log In To Already Existing Account:</h1>
+              <h1>Welcome to Nutrition Tracker!</h1>
             </Jumbotron>
             <form>
               <Input
@@ -81,8 +65,10 @@ class Login extends Component {
                 name="password"
                 placeholder="Password (required)"
               />
+              <p>{this.state.message}</p>
               <FormBtn
-                disabled={!(this.state.email && this.state.password)}
+                disabled={!(this.state.email && this.state.password) 
+                  || this.state.email === 'secret'}
                 onClick={this.handleFormSubmit}
               >
                 Log In

@@ -13,9 +13,6 @@ class Food extends Component {
   state = {
     search: "",
     foodItems: [],
-    example: "",
-    results: [],
-    error: "",
     apikey: "",
     itemNum: 0,
     nutrientsList: [],
@@ -26,26 +23,11 @@ class Food extends Component {
 
   searchFoodItems = (event) => {
     API.getFoodItems()
-
   }
 
   componentDidMount() {
     this.getCaloriesToday();
   }
-
-  // loadBooks = () => {
-  //   API.getBooks()
-  //     .then(res =>
-  //       this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-  //     )
-  //     .catch(err => console.log(err));
-  // };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
 
   handleInputChange = event => {
     const { name, value } = event.target;
@@ -57,22 +39,13 @@ class Food extends Component {
   handleFormSubmit = event => {
     event.preventDefault();
     this.getKey();
-    //this.searchTest(this.state.search, this.state.apikey);
-    
-    
   };
 
   searchAPI = query => {
     API.foodSearch(query, this.state.apikey)
       .then(response => {
-        //console.log(res);
-        //console.log(res.data);
-        console.log(JSON.stringify(response));
-        console.log(response.data.list.item[0].name);
-        console.log(response.data.list.item[0].ndbno);
         this.setState({itemNum: response.data.list.item[0].ndbno});
         this.setState({foodItems: response.data.list.item});
-        console.log(response.data.list.item[0].group);
         this.setState({itemNum: 0, 
           nutrientsList: [],
           itemInfo: {}
@@ -86,33 +59,15 @@ class Food extends Component {
       .then(res => {
         this.setState({apikey: res.data.password});
         this.searchAPI(this.state.search, this.state.apikey);
-        //this.setState({apikey: ""});
       })
       .catch(err => console.log(err));
   }
 
-  // getKeyAfterItemSelect = () => {
-  //   API.getSecret()
-  //   .then(res => {
-  //     this.setState({apikey: res.data.password});
-  //     this.searchAPI(this.state.search, this.state.apikey);
-  //     this.setState({apikey: ""});
-  //   })
-  //   .catch(err => console.log(err));
-  // }
-
   getItem = id => {
     API.getFoodItem(id, this.state.apikey)
       .then(res => {console.log(res);
-        console.log(JSON.stringify(res));
-        console.log(res.data.report.food.name);
-        console.log(res.data.report.food.nutrients[0].value);
-        console.log(res.data.report.food.nutrients[0].unit);
         this.setState({nutrientsList: res.data.report.food.nutrients});
-        console.log(res.data.report.food.nutrients[0].measures[0].value);
-        console.log(res.data.report.food.nutrients[0].measures[0].eunit);
         this.setState({itemInfo:res.data.report.food});
-        console.log(res.data.report.food.nutrients.find(obj=>obj.name==="Protein").value);
       })
       .catch(err => console.log(err));
   };
@@ -126,8 +81,8 @@ class Food extends Component {
       energy: this.findKey("Energy"),
       protein: this.findKey("Protein"),
       fat: this.findKey("Total lipid (fat)"),
-      carbs: this.findKey("Energy"),
-      fiber: this.findKey("Carbohydrate, by difference"),
+      carbs: this.findKey("Carbohydrate, by difference"),
+      fiber: this.findKey("Fiber, total dietary"),
       sugar: this.findKey("Sugars, total"),
       userId: localStorage.getItem("userId")
     })
@@ -148,13 +103,12 @@ class Food extends Component {
 
   getCaloriesToday = () => {
     API.getCalsToday(localStorage.getItem("userId"))
-    .then(res => {console.log(res);
+    .then(res => {
       this.setState({ foodEntries: res.data.foodEntries });
       const today = moment().startOf('day');
       const tomorrow = moment(today).endOf('day');
       const result = this.state.foodEntries.filter(foodEntry => (moment(foodEntry.date).isAfter(today) && moment(foodEntry.date).isBefore(tomorrow)))
-        .reduce(function(sum, entry) {console.log(entry.energy); return sum + entry.energy}, 0);
-      console.log("result: " + result);
+        .reduce(function(sum, entry) {return sum + entry.energy}, 0);
       this.setState({caloriesToday: result});
     })
     .catch(err => console.log(err));
@@ -167,9 +121,9 @@ class Food extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
-              <h1>Food Search & Select Page</h1>
+              <h1>Food Search & Select</h1>
               <h2>Calories Consumed Today: {this.state.caloriesToday}</h2>
             </Jumbotron>
             <form>

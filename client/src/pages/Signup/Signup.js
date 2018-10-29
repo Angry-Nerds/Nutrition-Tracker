@@ -15,24 +15,6 @@ class Signup extends Component {
     initialWeight: ""
   };
 
-  // componentDidMount() {
-  //   this.loadBooks();
-  // }
-
-  // loadBooks = () => {
-  //   API.getBooks()
-  //     .then(res =>
-  //       this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-  //     )
-  //     .catch(err => console.log(err));
-  // };
-
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
-
   handleInputChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -50,13 +32,7 @@ class Signup extends Component {
         initialWeight: parseFloat(this.state.initialWeight)
       })
         .then(res => {localStorage.setItem("userId", res.data._id);
-            console.log(localStorage.getItem("userId"));
             this.setState({redirect: true});
-            // API.getUserByEmail({
-            //   email: this.state.email
-            // })
-            //     .then(res => console.log(res))
-            //     .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
     }
@@ -69,7 +45,7 @@ class Signup extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
               <h1>Sign Up For an Account:</h1>
             </Jumbotron>

@@ -1,5 +1,6 @@
 const db = require("../models");
 const moment = require("moment");
+const bcrypt = require('bcrypt');
 
 // Defining methods for the booksController
 module.exports = {
@@ -32,27 +33,24 @@ module.exports = {
     //db.User.findOne({ email: req.body.email })
     db.User.findOne({email: req.body.email})
         .then(function(dbUser) {
-            console.log(dbUser);
         // If there's no user with the given email
         if (!dbUser) {
-            console.log(req.body.email);
-            console.log("incorrect email");
              res.json({
                  message: "Incorrect email."
             });
         }
-        // If there is a user with the given email, but the password the user gives us is incorrect
-        else if (dbUser.password != req.body.password) {
-            console.log("incorrect password");
-            res.json({
-                message: "Incorrect password."
-            });
-        }
         else {
-            // If none of the above, return the user
-            console.log("found user");
-            res.json({
-                user: dbUser
+            bcrypt.compare(req.body.password, dbUser.password).then(function(match) {
+                if (match) {
+                    res.json({
+                        user: dbUser
+                    });
+                }
+                else {
+                    res.json({
+                        message: "Incorrect password."
+                    });
+                }
             });
         }
     });
@@ -64,10 +62,20 @@ module.exports = {
           .catch(err => res.status(422).json(err));
       },
   create: function(req, res) {
-    db.User
-        .create(req.body)
-        .then(dbModel => res.json(dbModel))
-        .catch(err => res.status(422).json(err));
+    const saltRounds = 10;
+    const plainTextPassword = req.body.password;
+    bcrypt.hash(plainTextPassword, saltRounds).then(function(hash) {
+          db.User
+            .create({
+                email: req.body.email,
+                password: hash,
+                height: req.body.height,
+                initialWeight: req.body.initialWeight
+            })
+            .then(dbModel => res.json(dbModel))
+            .catch(err => res.status(422).json(err));
+    });
+    
   },
   saveWeight: function(req, res) {
       db.WeightEntry
@@ -122,8 +130,6 @@ module.exports = {
         .catch(err => res.status(422).json(err));
   },
   getWeightEntries: function(req, res) {
-    //console.log("here: " + req.body.id);
-    //db.User.findById(req.body.id)
     db.User.findById(req.params.id)
     // ..and populate all of the weight entries associated with it
         .populate("weightEntries")
@@ -131,8 +137,6 @@ module.exports = {
         .catch(err => res.status(422).json(err));
     },
     getWaterEntries: function(req, res) {
-    // console.log("here: " + req.body.id);
-    // db.User.findById(req.body.id)
     db.User.findById(req.params.id)
     // ..and populate all of the water entries associated with it
         .populate("waterEntries")
@@ -145,5 +149,55 @@ module.exports = {
             .populate("foodEntries")
             .then(dbUser => res.json(dbUser))
             .catch(err => res.status(422).json(err));
+    },
+    deleteFoodEntry: function(req, res) {
+        db.FoodEntry.remove(
+            {
+              _id: req.params.id
+            },
+            function(error, removed) {
+              // Log any errors from mongojs
+              if (error) {
+                //console.log(error);
+                res.send(error);
+              }
+              else {
+                // Otherwise, send the mongojs response to the browser
+                // This will fire off the success function of the ajax request
+                //console.log(removed);
+                res.send(removed);
+              }
+            }
+          );
+    },
+    deleteWaterEntry: function(req, res) {
+        db.WaterEntry.remove(
+            {
+              _id: req.params.id
+            },
+            function(error, removed) {
+              if (error) {
+                res.send(error);
+              }
+              else {
+                res.send(removed);
+              }
+            }
+          );
+    },
+    deleteWeightEntry: function(req, res) {
+        db.WeightEntry.remove(
+            {
+              _id: req.params.id
+            },
+            function(error, removed) {
+              if (error) {
+                res.send(error);
+              }
+              else {
+                res.send(removed);
+              }
+            }
+          );
     }
 };

@@ -34,13 +34,16 @@ router.route("/water")
 router.route("/weight")
   .post(usersController.saveWeight);
 
-router.route("/weight/history/:id")
-  .get(usersController.getWeightEntries);
+router.route("/food/history/:id")
+  .get(usersController.getFoodEntries)
+  .delete(usersController.deleteFoodEntry);
 
 router.route("/water/history/:id")
-  .get(usersController.getWaterEntries);
+  .get(usersController.getWaterEntries)
+  .delete(usersController.deleteWaterEntry);
 
-router.route("/food/history/:id")
-  .get(usersController.getFoodEntries);
+router.route("/weight/history/:id")
+  .get(usersController.getWeightEntries)
+  .delete(usersController.deleteWeightEntry);
 
 module.exports = router;
