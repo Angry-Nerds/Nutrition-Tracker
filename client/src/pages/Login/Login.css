@@ -1,0 +1,8 @@
+body {
+    background-image: url("../../Images/healthy1.jpg");
+    background-size: cover;
+}
+
+.bg-primary {
+    background-color: transparent !important;
+}
