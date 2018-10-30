@@ -1,9 +1,11 @@
 const router = require("express").Router();
 const usersController = require("../../controllers/usersController");
+const axios = require("axios");
+
 
 // Matches with "/api/users/login"
 router.route("/login")
-  .get(usersController.findOne);
+  .post(usersController.findAndVerifyAccount);
 
 // Matches with "/api/users/signup"
 router.route("/signup")
@@ -13,12 +15,16 @@ router.route("/signup")
 // Matches with "/api/users/:id"
 router.route("/:id")
   .get(usersController.findById);
-//   .put(booksController.update)
-//   .delete(booksController.remove);
 
 // Matches with "/api/users/food"
 router.route("/food")
-  .post(usersController.saveFoodEntry);
+  .post(usersController.saveFoodEntry)
+
+router.route("/food/secret")
+  .get(usersController.getSecret);
+
+router.route("/food/cals/:id")
+  .get(usersController.getFoodEntries);
 
 // Matches with "/api/users/water"
 router.route("/water")
@@ -28,13 +34,13 @@ router.route("/water")
 router.route("/weight")
   .post(usersController.saveWeight);
 
-router.route("/weight/history")
-  .post(usersController.getWeightEntries);
+router.route("/weight/history/:id")
+  .get(usersController.getWeightEntries);
 
-router.route("/water/history")
-  .post(usersController.getWaterEntries);
+router.route("/water/history/:id")
+  .get(usersController.getWaterEntries);
 
-router.route("/food/history")
-  .post(usersController.getFoodEntries);
+router.route("/food/history/:id")
+  .get(usersController.getFoodEntries);
 
 module.exports = router;

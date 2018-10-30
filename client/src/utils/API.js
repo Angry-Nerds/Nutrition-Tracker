@@ -17,8 +17,8 @@ export default {
   saveBook: function(bookData) {
     return axios.post("/api/books", bookData);
   },
-  findOne: function(userData) {
-    return axios.get("/api/users/login", userData);
+  logUserIn: function(userData) {
+    return axios.post("/api/users/login", userData);
   },
   signUserUp: function(userData) {
     return axios.post("/api/users/signup", userData)
@@ -38,10 +38,35 @@ export default {
   saveWeight: function(weightData) {
     return axios.post("/api/users/weight", weightData)
   },
-  getWeightEntries: function(idData) {
-    return axios.post("/api/users/weight/history", idData);
+  // getWeightEntries: function(idData) {
+  //   return axios.post("/api/users/weight/history", idData);
+  // },
+  getWeightEntries: function(id) {
+    return axios.get("/api/users/weight/history/" + id);
   },
-  getWaterEntries: function(idData) {
-    return axios.post("/api/users/water/history", idData);
+  getWaterEntries: function(id) {
+    return axios.get("/api/users/water/history/" + id);
+  },
+  getFoodEntries: function(id) {
+    return axios.get("/api/users/food/history/" + id);
+  },
+  getSecret: function() {
+    return axios.get("/api/users/food/secret");
+  },
+  foodSearch: function(query, key) {
+    const apikey = key;
+    const requestURL = 'https://api.nal.usda.gov/ndb/search/?format=json&q=' + query + '&sort=n&max=25&offset=0&api_key=' + apikey;
+    return axios.get(requestURL);    
+  },
+  getFoodItem: function(num, key) {
+    const apikey = key;
+    const requestURL = 'https://api.nal.usda.gov/ndb/reports/?ndbno=' + num + '&type=b&format=json&api_key=' + apikey;
+    return axios.get(requestURL);
+  },
+  submitFoodItem: function(foodData) {
+    return axios.post("/api/users/food", foodData);
+  },
+  getCalsToday: function(id) {
+    return axios.get("/api/users/food/cals/" + id);
   }
 };

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 //import { List, ListItem } from "../../components/List";
 import { Input, FormBtn } from "../../components/Form";
@@ -42,16 +42,26 @@ class Login extends Component {
   handleFormSubmit = event => {
     event.preventDefault();
     if (this.state.email && this.state.password) {
-      API.findOne({
+      API.logUserIn({
         email: this.state.email,
         password: this.state.password
       })
-        .then(res => console.log(res))
+        .then(res => {
+          if (res.data.user) {
+            localStorage.setItem("userId", res.data.user._id);
+            console.log(localStorage.getItem("userId"));
+            this.setState({redirect: true});
+          }
+          
+        })
         .catch(err => console.log(err));
     }
   };
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect push to="/users/options" />;
+    }
     return (
       <Container fluid>
         <Row>
@@ -66,6 +76,7 @@ class Login extends Component {
                 name="email"
                 placeholder="Email (required)"
               />
+              <h5>We will never share your email with anyone.</h5>
               <Input
                 value={this.state.password}
                 onChange={this.handleInputChange}
