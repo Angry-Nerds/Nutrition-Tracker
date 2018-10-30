@@ -8,6 +8,7 @@ import { List, ListItem } from "../../components/List";
 import SelectBtn from "../../components/SelectBtn";
 import { Input, FormBtn } from "../../components/Form";
 import moment from "moment";
+import "./Food.css";
 
 class Food extends Component {
   state = {
