@@ -1,20 +1,14 @@
 import React, { Component } from "react";
-//import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
 import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
-//import { List, ListItem } from "../../components/List";
-import { Input, FormBtn } from "../../components/Form";
+import { FormBtn } from "../../components/Form";
 
 class Water extends Component {
   state = {
     glassesOfWater: 0
   };
-
-  // componentDidMount() {
-  //   this.loadBooks();
-  // }
 
   handleInputChange = event => {
     const { name, value } = event.target;
@@ -26,20 +20,6 @@ class Water extends Component {
   handleIncrement = event => {
     event.preventDefault();
     this.setState({ glassesOfWater: this.state.glassesOfWater + 1 });
-    
-    // if (this.state.glassesOfWater === 0) {
-    //   API.saveWaterEntry({
-    //     glassesOfWater: 1,
-    //     userId: localStorage.getItem("userId")
-    //   })
-    //   .then(res => {console.log(res);
-    //     this.setState({ glassesOfWater: this.state.glassesOfWater + 1 });
-    //   })
-    //   .catch(err => console.log(err));
-    // }
-    // else {
-      
-    // }
   }
 
   handleDecrement = event => {
@@ -47,19 +27,6 @@ class Water extends Component {
     if (this.state.glassesOfWater > 0) {
       this.setState({ glassesOfWater: this.state.glassesOfWater - 1 });
     }
-    // if (this.state.glassesOfWater > 0) {
-    //   API.saveWaterEntry({
-    //     glassesOfWater: 0,
-    //     userId: localStorage.getItem("userId")
-    //   })
-    //   .then(res => {console.log(res);
-    //     this.setState({ glassesOfWater: this.state.glassesOfWater - 1});
-    //   })
-    //   .catch(err => console.log(err));
-    // }
-    // else {
-      
-    // }
   }
 
   submitWaterIntake = event => {
@@ -69,8 +36,7 @@ class Water extends Component {
           glassesOfWater: this.state.glassesOfWater,
           userId: localStorage.getItem("userId")
         })
-        .then(res => {console.log(res);
-        })
+        .then(this.setState({glassesOfWater: 0}))
         .catch(err => console.log(err));
   }
 
@@ -81,9 +47,9 @@ class Water extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
-              <h1>Glasses of Water Counter Page</h1>
+              <h1>Glasses of Water Counter</h1>
               <h2>{this.state.glassesOfWater}</h2>
             </Jumbotron>
             <form>

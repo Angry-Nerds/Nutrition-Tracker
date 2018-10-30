@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.17.2",
     "chart.js": "^2.7.3",
     "express": "^4.15.4",

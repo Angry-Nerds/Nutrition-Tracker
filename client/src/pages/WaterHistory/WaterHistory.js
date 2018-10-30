@@ -1,12 +1,16 @@
 import React, { Component } from "react";
-//import DeleteBtn from "../../components/DeleteBtn";
+import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
 import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
-import { Input, FormBtn } from "../../components/Form";
+import { FormBtn } from "../../components/Form";
 import Moment from "react-moment";
+import moment from "moment";
+import ReactChartkick, { ColumnChart } from 'react-chartkick'
+import Chart from 'chart.js'
+ReactChartkick.addAdapter(Chart)
 
 class WaterHistory extends Component {
   state = {
@@ -19,19 +23,18 @@ class WaterHistory extends Component {
 
   loadWaterEntries = () => {
     const userId = localStorage.getItem("userId");
-    console.log(userId);
     API.getWaterEntries(userId)
-      .then(res => {console.log(res);
+      .then(res => {
         this.setState({ waterEntries: res.data.waterEntries });
       })
       .catch(err => console.log(err));
   };
 
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
+  deleteWaterEntry = id => {
+    API.deleteWaterEntry(id)
+      .then(res => this.loadWaterEntries())
+      .catch(err => console.log(err));
+  };
 
   handleInputChange = event => {
     const { name, value } = event.target;
@@ -49,14 +52,9 @@ class WaterHistory extends Component {
         height: parseInt(this.state.height, 10),
         initialWeight: parseFloat(this.state.initialWeight)
       })
-        .then(res => {localStorage.setItem("userId", res.data._id);
-            console.log(localStorage.getItem("userId"));
+        .then(res => {
+            localStorage.setItem("userId", res.data._id);
             this.setState({redirect: true});
-            // API.getUserByEmail({
-            //   email: this.state.email
-            // })
-            //     .then(res => console.log(res))
-            //     .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
     }
@@ -66,13 +64,18 @@ class WaterHistory extends Component {
     if (this.state.redirect) {
       return <Redirect push to="/users/options" />;
     }
+    var points = [];
+    for (var i = 0; i < this.state.waterEntries.length; i++) {
+        points.push([moment(this.state.waterEntries[i].date).format("YYYY-MM-DD h:mm:ss a"), this.state.waterEntries[i].glassesOfWater]);
+    }
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
-              <h1>Water Intake History Page</h1>
+              <h1>Water Intake History</h1>
             </Jumbotron>
+            <ColumnChart data={points}/>
             <form>
               
               <Link to={"/users/water/"}>
@@ -94,7 +97,8 @@ class WaterHistory extends Component {
             <List>
                 {this.state.waterEntries.map(waterEntry => (
                   <ListItem key={waterEntry._id}>
-                    {waterEntry.glassesOfWater} (<Moment>{waterEntry.date}</Moment>)
+                    {waterEntry.glassesOfWater} (<Moment format="MMMM Do YYYY, h:mm:ss a">{waterEntry.date}</Moment>)
+                    <DeleteBtn onClick={() => this.deleteWaterEntry(waterEntry._id)} />
                   </ListItem>
                 ))}
               </List>

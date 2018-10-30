@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-//import DeleteBtn from "../../components/DeleteBtn";
+import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
 import { Link, Redirect } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
-import { Input, FormBtn } from "../../components/Form";
+import { FormBtn } from "../../components/Form";
 import Moment from "react-moment";
-import ReactChartkick, { LineChart, PieChart } from 'react-chartkick'
+import ReactChartkick, { PieChart } from 'react-chartkick'
 import Chart from 'chart.js'
 ReactChartkick.addAdapter(Chart)
 
@@ -24,10 +24,16 @@ class FoodHistory extends Component {
     const userId = localStorage.getItem("userId");
     console.log(userId);
     API.getFoodEntries(userId)
-      .then(res => {console.log(res);
+      .then(res => {
         this.setState({ foodEntries: res.data.foodEntries });
       })
       .catch(err => console.log(err));
+  };
+
+  deleteFoodEntry = id => {
+      API.deleteFoodEntry(id)
+        .then(res => this.loadFoodEntries())
+        .catch(err => console.log(err));
   };
 
   handleInputChange = event => {
@@ -47,7 +53,6 @@ class FoodHistory extends Component {
         initialWeight: parseFloat(this.state.initialWeight)
       })
         .then(res => {localStorage.setItem("userId", res.data._id);
-            console.log(localStorage.getItem("userId"));
             this.setState({redirect: true});
         })
         .catch(err => console.log(err));
@@ -68,9 +73,9 @@ class FoodHistory extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12 md-9">
             <Jumbotron>
-              <h1>Food History Page</h1>
+              <h1>Food History</h1>
             </Jumbotron>
             <PieChart data={points} />
             <form>
@@ -94,7 +99,8 @@ class FoodHistory extends Component {
             <List>
                 {this.state.foodEntries.map(foodEntry => (
                   <ListItem key={foodEntry._id}>
-                    {foodEntry.foodItem} (<Moment format="YYYY/MM/DD">{foodEntry.date}</Moment>) Calories: {foodEntry.energy}
+                    {foodEntry.foodItem} (<Moment format="MMMM Do YYYY, h:mm:ss a">{foodEntry.date}</Moment>) Calories: {foodEntry.energy}
+                    <DeleteBtn onClick={() => this.deleteFoodEntry(foodEntry._id)} />
                   </ListItem>
                 ))}
               </List>
